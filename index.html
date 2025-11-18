@@ -370,12 +370,10 @@
     <!-- End of Main Content -->
 
     <script>
-        // Web Audio API Setup for Sound Effects
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioCtx = new AudioContext();
         let soundEnabled = false;
 
-        // Enable sound on first user interaction (required by browsers)
         document.addEventListener('click', function enableSound() {
             if (!soundEnabled) {
                 audioCtx.resume();
@@ -383,7 +381,6 @@
             }
         }, { once: false });
 
-        // Sound Effect Functions
         function playClickSound() {
             if (!soundEnabled) return;
             const oscillator = audioCtx.createOscillator();
@@ -519,7 +516,6 @@
             line.style.animationDelay = Math.random() * 4 + 's';
             circuitBg.appendChild(line);
             
-            // Add sound effect for circuit animation
             setTimeout(() => {
                 if (Math.random() > 0.7) playCircuitSound();
             }, Math.random() * 4000);
@@ -589,7 +585,7 @@
         }
 
         document.addEventListener('click', function(e) {
-            playClickSound(); // Play click sound
+            playClickSound();
             
             const ripple = document.createElement('div');
             ripple.className = 'ripple';
@@ -614,8 +610,7 @@
                 trail.style.background = '#5dade2';
                 trail.style.boxShadow = '0 0 4px rgba(93, 173, 226, 0.6)';
                 document.body.appendChild(trail);
-                
-                // Play ambient sound occasionally
+
                 if (Math.random() > 0.95) playAmbientTone();
                 
                 setTimeout(() => trail.remove(), 2000);
@@ -633,7 +628,6 @@
             container.style.transform = 'perspective(1000px) rotateY(0) rotateX(0) scale(1)';
         });
 
-        // Add hover sound effects to interactive elements
         const h1 = document.querySelector('h1');
         const h2 = document.querySelector('h2');
         const img = document.querySelector('img');
@@ -655,14 +649,12 @@
             playHoverSound();
         });
 
-        // Periodic ambient circuit sounds
         setInterval(() => {
             if (soundEnabled && Math.random() > 0.7) {
                 playCircuitSound();
             }
         }, 3000);
 
-        // Welcome sound on page load (delayed)
         setTimeout(() => {
             if (soundEnabled) {
                 playWhooshSound();
