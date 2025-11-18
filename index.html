@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My First Cloud Deployment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #e0f7ff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            cursor: default;
+        }
+
+        .circuit-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.2;
+            overflow: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(52, 152, 219, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(41, 128, 185, 0.1) 0%, transparent 50%);
+        }
+
+        .circuit-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.6), transparent);
+            animation: circuitFlow 6s ease-in-out infinite;
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.4);
+        }
+
+        .circuit-line.horizontal {
+            height: 2px;
+            width: 200px;
+        }
+
+        .circuit-line.vertical {
+            width: 2px;
+            height: 200px;
+        }
+
+        .circuit-node {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #3498db;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.8), 0 0 20px rgba(52, 152, 219, 0.4);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes circuitFlow {
+            0% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.5;
+            }
+        }
+
+        .code-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .code-snippet {
+            position: absolute;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            color: #5dade2;
+            opacity: 0.3;
+            animation: floatCode 20s ease-in-out infinite;
+            text-shadow: 0 0 3px rgba(93, 173, 226, 0.5);
+            white-space: nowrap;
+        }
+
+        @keyframes floatCode {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(50px);
+                opacity: 0;
+            }
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #5dade2;
+            border-radius: 50%;
+            animation: particleMove 15s ease-in-out infinite;
+            opacity: 0.5;
+            box-shadow: 0 0 4px rgba(93, 173, 226, 0.6);
+        }
+
+        @keyframes particleMove {
+            0% {
+                transform: translate(0, 0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty));
+                opacity: 0;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 50px;
+            background: rgba(23, 32, 42, 0.9);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 40px rgba(52, 152, 219, 0.15);
+            animation: containerFloat 4s ease-in-out infinite;
+            max-width: 800px;
+            transition: all 0.4s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px) scale(1.01);
+            border-color: rgba(52, 152, 219, 0.6);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 60px rgba(52, 152, 219, 0.25);
+        }
+
+        @keyframes containerFloat {
+            0%, 100% {
+                transform: translateY(0);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 40px rgba(52, 152, 219, 0.15);
+            }
+            50% {
+                transform: translateY(-8px);
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), 0 0 50px rgba(52, 152, 219, 0.2);
+            }
+        }
+
+        h1 {
+            font-size: 3em;
+            background: linear-gradient(135deg, #3498db, #5dade2, #85c1e9);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            animation: gradientFlow 6s ease infinite;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        h1:hover {
+            transform: scale(1.03);
+            filter: brightness(1.2);
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: #5dade2;
+            margin-bottom: 30px;
+            animation: fadeInSlide 1.5s ease;
+            transition: all 0.3s ease;
+            font-weight: 400;
+        }
+
+        h2:hover {
+            color: #85c1e9;
+            text-shadow: 0 0 15px rgba(93, 173, 226, 0.5);
+            transform: translateX(5px);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes fadeInSlide {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .image-container {
+            margin: 30px 0;
+            position: relative;
+            display: inline-block;
+        }
+
+        img {
+            border-radius: 8px;
+            border: 3px solid #3498db;
+            box-shadow: 0 4px 20px rgba(52, 152, 219, 0.3);
+            transition: all 0.4s ease;
+            animation: fadeIn 1.5s ease;
+            filter: brightness(1);
+        }
+
+        img:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 8px 30px rgba(52, 152, 219, 0.5);
+            border-color: #5dade2;
+            filter: brightness(1.1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        p {
+            font-size: 1.3em;
+            color: #a2cae6;
+            line-height: 1.6;
+            animation: fadeInUp 2s ease;
+            transition: all 0.3s ease;
+        }
+
+        p:hover {
+            color: #e0f7ff;
+            transform: scale(1.02);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(52, 152, 219, 0.3);
+            transform: scale(0);
+            animation: rippleEffect 0.8s ease-out;
+            pointer-events: none;
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.4);
+        }
+
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.5), transparent);
+            animation: scan 8s linear infinite;
+            z-index: 5;
+            opacity: 0.3;
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
+        }
+
+        @keyframes scan {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(100vh);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="circuit-bg" id="circuitBg"></div>
+    
+    <div class="code-bg" id="codeBg"></div>
+    
+    <div class="scanline"></div>
+
+    <!-- Main Content -->
+    <div class="container" id="mainContainer">
+        <h1>My First Cloud Deployment!</h1>
+        <h2>Hello, My Name is John Mirvin Sarte</h2>
+        <div class="image-container">
+            <img src="pic/gradpic.jpg" width="200" alt="Profile Picture"/>
+        </div>
+        <p>This is my first deployed website on Vercel!</p>
+    </div>
+    <!-- End of Main Content -->
+
+    <script>
+        // Web Audio API Setup for Sound Effects
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+        let soundEnabled = false;
+
+        // Enable sound on first user interaction (required by browsers)
+        document.addEventListener('click', function enableSound() {
+            if (!soundEnabled) {
+                audioCtx.resume();
+                soundEnabled = true;
+            }
+        }, { once: false });
+
+        // Sound Effect Functions
+        function playClickSound() {
+            if (!soundEnabled) return;
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+            
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + 0.15);
+        }
+
+        function playHoverSound() {
+            if (!soundEnabled) return;
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.frequency.value = 500;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + 0.1);
+        }
+
+        function playCircuitSound() {
+            if (!soundEnabled) return;
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+            
+            oscillator.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.frequency.value = 1000;
+            oscillator.type = 'sine';
+            filter.type = 'lowpass';
+            filter.frequency.value = 1500;
+            
+            gainNode.gain.setValueAtTime(0.03, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+            
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + 0.2);
+        }
+
+        function playAmbientTone() {
+            if (!soundEnabled) return;
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.frequency.value = 250 + Math.random() * 100;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.015, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1);
+            
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + 1);
+        }
+
+        function playWhooshSound() {
+            if (!soundEnabled) return;
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+            
+            oscillator.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.type = 'sine';
+            filter.type = 'lowpass';
+            
+            oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.4);
+            
+            filter.frequency.setValueAtTime(2500, audioCtx.currentTime);
+            filter.frequency.exponentialRampToValueAtTime(500, audioCtx.currentTime + 0.4);
+            
+            gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+            
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + 0.4);
+        }
+
+        function playGlitchSound() {
+            if (!soundEnabled) return;
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.frequency.value = 900;
+            oscillator.type = 'sine';
+            
+            oscillator.frequency.setValueAtTime(900, audioCtx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
+            
+            gainNode.gain.setValueAtTime(0.06, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+            
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + 0.15);
+        }
+
+        const circuitBg = document.getElementById('circuitBg');
+        const numCircuits = 30;
+        
+        for (let i = 0; i < numCircuits; i++) {
+
+            const line = document.createElement('div');
+            line.className = 'circuit-line ' + (Math.random() > 0.5 ? 'horizontal' : 'vertical');
+            line.style.left = Math.random() * 100 + '%';
+            line.style.top = Math.random() * 100 + '%';
+            line.style.animationDelay = Math.random() * 4 + 's';
+            circuitBg.appendChild(line);
+            
+            // Add sound effect for circuit animation
+            setTimeout(() => {
+                if (Math.random() > 0.7) playCircuitSound();
+            }, Math.random() * 4000);
+            
+            const node = document.createElement('div');
+            node.className = 'circuit-node';
+            node.style.left = Math.random() * 100 + '%';
+            node.style.top = Math.random() * 100 + '%';
+            node.style.animationDelay = Math.random() * 2 + 's';
+            circuitBg.appendChild(node);
+        }
+
+        const codeBg = document.getElementById('codeBg');
+        const codeSnippets = [
+            'kubectl apply -f',
+            'docker build -t app',
+            'terraform apply',
+            'aws s3 sync',
+            'vercel deploy',
+            'git push origin',
+            'npm run build',
+            'docker-compose up',
+            'helm install app',
+            'kubectl get pods',
+            'az login',
+            'gcloud init',
+            'nginx -s reload',
+            'systemctl status',
+            'pm2 start app',
+            'docker ps -a',
+            'terraform plan',
+            'ansible-playbook',
+            'monitoring: active',
+            'CI/CD pipeline',
+            'load balancer: OK',
+            'auto-scaling: ON',
+            'health check: PASS',
+            'deployment: success',
+            'containers: running',
+            'cluster: healthy',
+            'backup: complete',
+            'security scan: OK',
+            'uptime: 99.9%',
+            'latency: 45ms'
+        ];
+        
+        for (let i = 0; i < 20; i++) {
+            const code = document.createElement('div');
+            code.className = 'code-snippet';
+            code.textContent = codeSnippets[Math.floor(Math.random() * codeSnippets.length)];
+            code.style.left = Math.random() * 100 + '%';
+            code.style.top = Math.random() * 100 + '%';
+            code.style.animationDelay = Math.random() * 20 + 's';
+            code.style.animationDuration = (15 + Math.random() * 10) + 's';
+            codeBg.appendChild(code);
+        }
+
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.setProperty('--tx', (Math.random() - 0.5) * 500 + 'px');
+            particle.style.setProperty('--ty', (Math.random() - 0.5) * 500 + 'px');
+            particle.style.animationDelay = Math.random() * 10 + 's';
+            document.body.appendChild(particle);
+        }
+
+        document.addEventListener('click', function(e) {
+            playClickSound(); // Play click sound
+            
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple';
+            ripple.style.left = e.clientX + 'px';
+            ripple.style.top = e.clientY + 'px';
+            ripple.style.width = '20px';
+            ripple.style.height = '20px';
+            document.body.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 600);
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (Math.random() > 0.9) {
+                const trail = document.createElement('div');
+                trail.className = 'particle';
+                trail.style.left = e.clientX + 'px';
+                trail.style.top = e.clientY + 'px';
+                trail.style.setProperty('--tx', (Math.random() - 0.5) * 100 + 'px');
+                trail.style.setProperty('--ty', (Math.random() - 0.5) * 100 + 'px');
+                trail.style.animationDuration = '2s';
+                trail.style.background = '#5dade2';
+                trail.style.boxShadow = '0 0 4px rgba(93, 173, 226, 0.6)';
+                document.body.appendChild(trail);
+                
+                // Play ambient sound occasionally
+                if (Math.random() > 0.95) playAmbientTone();
+                
+                setTimeout(() => trail.remove(), 2000);
+            }
+        });
+
+        const container = document.getElementById('mainContainer');
+        document.addEventListener('mousemove', function(e) {
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            container.style.transform = `perspective(1000px) rotateY(${x}deg) rotateX(${-y}deg) scale(1.02)`;
+        });
+
+        document.addEventListener('mouseleave', function() {
+            container.style.transform = 'perspective(1000px) rotateY(0) rotateX(0) scale(1)';
+        });
+
+        // Add hover sound effects to interactive elements
+        const h1 = document.querySelector('h1');
+        const h2 = document.querySelector('h2');
+        const img = document.querySelector('img');
+        const p = document.querySelector('p');
+
+        h1.addEventListener('mouseenter', function() {
+            playWhooshSound();
+        });
+
+        h2.addEventListener('mouseenter', function() {
+            playHoverSound();
+        });
+
+        img.addEventListener('mouseenter', function() {
+            playGlitchSound();
+        });
+
+        p.addEventListener('mouseenter', function() {
+            playHoverSound();
+        });
+
+        // Periodic ambient circuit sounds
+        setInterval(() => {
+            if (soundEnabled && Math.random() > 0.7) {
+                playCircuitSound();
+            }
+        }, 3000);
+
+        // Welcome sound on page load (delayed)
+        setTimeout(() => {
+            if (soundEnabled) {
+                playWhooshSound();
+                setTimeout(() => playAmbientTone(), 200);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
