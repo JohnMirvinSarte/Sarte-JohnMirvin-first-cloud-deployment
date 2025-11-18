@@ -1160,14 +1160,32 @@
             // If page loses focus (could be snipping tool or screenshot app opening)
             console.log('%c⚠️ WINDOW BLUR - Screenshot tool may be active', 'color: #f39c12; font-size: 14px;');
             
+            // Apply blur effect when window loses focus
+            document.body.style.filter = 'blur(3px)';
+            document.body.style.transition = 'filter 0.1s ease';
+            
             // If blur happens quickly (less than 2 seconds), likely a screenshot attempt
             if (timeSinceLastBlur < 2000 && timeSinceLastBlur > 0) {
                 console.warn('%c📸 RAPID BLUR PATTERN - Screenshot suspected', 'color: #e74c3c; font-size: 16px; font-weight: bold;');
                 showScreenshotWarning();
+                // Increase blur for suspected screenshot
+                document.body.style.filter = 'blur(8px)';
             }
         });
 
-        // 4d. Monitor for F11 key (fullscreen toggle)
+        // 4d. Remove blur when page regains focus
+        window.addEventListener('focus', function() {
+            console.log('%c✅ PAGE FOCUSED - Blur removed', 'color: #27ae60; font-size: 14px;');
+            document.body.style.filter = 'none';
+        });
+
+        // 4d. Remove blur when page regains focus
+        window.addEventListener('focus', function() {
+            console.log('%c✅ PAGE FOCUSED - Blur removed', 'color: #27ae60; font-size: 14px;');
+            document.body.style.filter = 'none';
+        });
+
+        // 4e. Monitor for F11 key (fullscreen toggle)
         document.addEventListener('keydown', function(e) {
             if (e.key === 'F11' || e.keyCode === 122) {
                 console.log('%c🖥️ F11 PRESSED - Fullscreen toggle', 'color: #3498db; font-size: 14px;');
